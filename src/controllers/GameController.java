@@ -1,33 +1,44 @@
 package controllers;
 
+import exceptions.BotCountMoreThanOneException;
+import exceptions.DuplicateSymbolException;
+import exceptions.PlayerCountMismatchException;
 import models.Game;
+import models.GameState;
 import models.Player;
+import strategies.WinningStrategy;
 
 import java.util.List;
 
 public class GameController {
 
-    public Game startGame(List<Player> players, int boardDimensions) {
-        return null;
+    public Game startGame(List<Player> players,
+                          int boardDimensions,
+                          List<WinningStrategy> winningStrategies) throws BotCountMoreThanOneException, DuplicateSymbolException, PlayerCountMismatchException {
+        return Game.getBuilder()
+                .setPlayers(players)
+                .setWinningStrategies(winningStrategies)
+                .setSize(boardDimensions)
+                .build();
     }
 
-    public void makeMove() {
-
+    public void makeMove(Game game) {
+        game.makeMove();
     }
 
-    public void checkState() {
-
+    public GameState checkState(Game game) {
+        return game.getGameState();
     }
 
-    public void getWinner() {
-
+    public Player getWinner(Game game) {
+        return game.getWinner();
     }
 
-    public void printBoard() {
-
+    public void printBoard(Game game) {
+        game.printBoard();
     }
 
-    public void undo() {
-
+    public void undo(Game game) {
+        game.undo();
     }
 }

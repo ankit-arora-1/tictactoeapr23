@@ -9,6 +9,15 @@ public class Board {
 
     public Board(int size) {
         this.size = size;
+        board = new ArrayList<>(); // []
+
+        for (int i = 0; i < size; ++i) {
+            board.add(new ArrayList<>()); // [[], [], []]
+
+            for (int j = 0; j < size; ++j) { // [[o o o] [o o o] [o o o]]
+                board.get(i).add(new Cell(i, j));
+            }
+        }
     }
 
     public int getSize() {
@@ -25,5 +34,14 @@ public class Board {
 
     public void setBoard(List<List<Cell>> board) {
         this.board = board;
+    }
+
+    public void printBoard() {
+        for(List<Cell> row: board) {
+            for(Cell cell: row) {
+                cell.display();
+            }
+            System.out.println();
+        }
     }
 }

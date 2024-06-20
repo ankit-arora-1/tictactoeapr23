@@ -29,7 +29,7 @@ public class Game {
         this.gameState = GameState.IN_PROGRESS;
     }
 
-    static class Builder {
+    public static class Builder {
         private List<Player> players;
         private int size;
         private List<WinningStrategy> winningStrategies;
@@ -168,5 +168,89 @@ public class Game {
 
     public void setWinningStrategies(List<WinningStrategy> winningStrategies) {
         this.winningStrategies = winningStrategies;
+    }
+
+    public void makeMove() {
+        Player currentMovePlayer = players.get(nextMovePlayerIndex);
+
+        System.out.println("It is " + currentMovePlayer.getName() +
+                " turn. Please make your move");
+
+        Move move = currentMovePlayer.makeMove(board);
+
+        if(!validateMove(move)) {
+            System.out.println("Invalid move. Please try again.");
+            return;
+        }
+
+        int row = move.getCell().getRow();
+        int col = move.getCell().getCol();
+
+        Cell cellToUpdate = board.getBoard().get(row).get(col);
+        cellToUpdate.setCellState(CellState.FILLED);
+        cellToUpdate.setPlayer(currentMovePlayer);
+
+        Move finalMove = new Move(cellToUpdate, currentMovePlayer);
+        moves.add(finalMove);
+
+        nextMovePlayerIndex += 1;
+        nextMovePlayerIndex %= players.size();
+
+        if(checkWinner(move)) {
+            gameState = GameState.WIN;
+            winner = currentMovePlayer;
+        } else if(moves.size() == board.getSize() * board.getSize()) {
+            gameState = GameState.DRAW;
+        }
+    }
+
+    private boolean checkWinner(Move move) {
+        for(WinningStrategy winningStrategy: winningStrategies) {
+            if(winningStrategy.checkWinner(board, move)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean validateMove(Move move) {
+        int row = move.getCell().getRow();
+        int col = move.getCell().getCol();
+
+        if(row >= board.getSize()) {
+            return false;
+        }
+
+        if(col >= board.getSize()) {
+            return false;
+        }
+
+        if(board.getBoard().get(row).get(col).getCellState().equals(CellState.EMPTY)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public void printBoard() {
+        board.printBoard();
+    }
+
+    public void undo() {
+        if(moves.size() == 0) {
+            System.out.println("Board is empty. Cannot undo.");
+            return;
+        }
+
+        Move lastMove = moves.get(moves.size() - 1);
+        moves.remove(lastMove);
+
+        Cell cell = lastMove.getCell();
+        cell.setCellState(CellState.EMPTY);
+        cell.setPlayer(null);
+
+        nextMovePlayerIndex -= 1;
+        nextMovePlayerIndex = (nextMovePlayerIndex + players.size()) % players.size();
     }
 }

@@ -7,6 +7,16 @@ public class Player {
     private String name;
     private Long id;
     private PlayerType playerType;
+    private Scanner scanner;
+
+    // TODO: Write ID generation logic
+    public Player(Long id, String name, Symbol symbol, PlayerType type) {
+        this.id = id;
+        this.playerType = type;
+        this.name = name;
+        this.symbol = symbol;
+        this.scanner = new Scanner(System.in);
+    }
 
     public Symbol getSymbol() {
         return symbol;
@@ -38,5 +48,19 @@ public class Player {
 
     public void setPlayerType(PlayerType playerType) {
         this.playerType = playerType;
+    }
+
+    public Move makeMove(Board board) {
+        System.out.println("Please give the row where you want to " +
+                "make the move (0 based index)");
+
+        int row = scanner.nextInt();
+
+        System.out.println("Please give the col where you want to " +
+                "make the move (0 based index)");
+
+        int col = scanner.nextInt();
+
+        return new Move(new Cell(row, col), this);
     }
 }
